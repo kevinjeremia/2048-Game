@@ -1,5 +1,6 @@
 package game2048;
 
+import java.awt.event.KeyEvent;
 import java.util.Formatter;
 import java.util.Observable;
 
@@ -114,9 +115,91 @@ public class Model extends Observable {
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
 
+        /*for(int c = 3; c >= 0; c--){
+            for(int r = 3; r >= 0; r--){
+                Tile t = board.tile(c, r);
+                if(r < 3  && board.tile(c,r) != null && board.tile(c,r+1) == null ){
+                    board.move(c, (r+1)%board.size(), t);
+                    changed = true;
+                }
+            }
+        }
+
+        for(int c = 3; c >= 0; c--){
+            for(int r = 3; r >= 0; r--){
+                Tile t = board.tile(c, r);
+                if(r < 3  && t != null && board.tile(c,r+1) != null && board.tile(c, r+1).value() == t.value()){
+                    board.move(c, r+1, t);
+                    changed = true;
+                    score += board.tile(c, r+1).value();
+                } else if(r < 2  && board.tile(c,r) != null && board.tile(c,r+1) == null ){
+                    board.move(c, r+1, t);
+                    changed = true;
+                }
+            }
+        }*/
+        /** DEBUG changed = true => kalo ga berubah ga perlu changed = true
+         coba cek TestModel
+         * */
+        if (side == Side.NORTH){
+            changed = tiltNorth();;
+        } else if (side == Side.WEST){
+            board.setViewingPerspective(Side.WEST);
+            changed = tiltNorth();
+            board.setViewingPerspective(Side.NORTH);
+
+        } else if (side == Side.SOUTH){
+            board.setViewingPerspective(Side.SOUTH);
+            changed = tiltNorth();
+            board.setViewingPerspective(Side.NORTH);
+
+        } else if (side == Side.EAST){
+            board.setViewingPerspective(Side.EAST);
+            changed = tiltNorth();
+            board.setViewingPerspective(Side.NORTH);
+
+        }
+
         checkGameOver();
         if (changed) {
             setChanged();
+        }
+        return changed;
+    }
+
+    /** Runs the logic of tilt
+     *  Move the tile towards the side of the tilt
+    */
+    private boolean tiltNorth() {
+        boolean changed = false;
+
+        for(int c = 3; c >= 0; c--){
+            for(int r = 3; r >= 0; r--){
+                Tile t = board.tile(c, r);
+                if(r < 3  && board.tile(c,r) != null && board.tile(c,r+1) == null ){
+                    board.move(c, r+1, t);
+                    changed = true;
+                }
+            }
+        }
+        for(int c = 3; c >= 0; c--){
+            for(int r = 3; r >= 0; r--){
+                Tile t = board.tile(c, r);
+                if(r < 3  && t != null && board.tile(c,r+1) != null && board.tile(c, r+1).value() == t.value()){
+                    board.move(c, r+1, t);
+                    score += board.tile(c, r+1).value();
+                    changed = true;
+                }/* else if (r < 2  && t != null && board.tile(c,r+1) != null && board.tile(c, r+2) == null && board.tile(c, r+1).value() == t.value()){
+                    board.move(c, r+2, t);
+                    score += board.tile(c, r+1).value();
+                    changed = true;
+                }*/ else if(r < 2  && t != null && board.tile(c,r+1) == null){
+                    board.move(c, r+1, t);
+                    changed = true;
+                }
+
+                // else if di atas = board move r+1, r+2 == null dihapus
+            }
         }
         return changed;
     }
@@ -173,19 +256,28 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
+
         if(emptySpaceExists(b)){
             return true;
         } else if (maxTileExists(b)) {
             return true;
         }
 
-        for(int row = 0; row < b.size(); row++){
-            for(int col = 0; col < b.size(); col++){
-                if (b.tile(col, row).value() == b.tile((col+1) % (b.size()-2), row).value()){
+        for(int row = 3; row >= 0; row--){
+            for(int col = 3; col >= 0; col--){
+                Tile t = b.tile(col, row);
+                if(row>0 && col<3 && t.value() == b.tile(col+1, row).value() ) {
                     return true;
-                } else if (b.tile(col, row).value() == b.tile(col, (row+1) % (b.size()-2)).value()) {
+                } else if(row>0 && col<3 && t.value() == b.tile(col, row-1).value()){
+                    return true;
+                } else if(col==3 && row > 0 && t.value() == b.tile(col, row-1).value()){
+                    return true;
+                } else if(row == 0 && col < 3 && t.value() == b.tile(row, col+1).value()){
+                    return true;
+                } else if(col==3 && row == 0 && t.value() == b.tile(col, row+1).value()){
                     return true;
                 }
+
             }
         }
 
