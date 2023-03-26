@@ -173,6 +173,64 @@ public class Model extends Observable {
     private boolean tiltNorth() {
         boolean changed = false;
 
+        boolean doesScore = false;
+
+        for(int c = 3; c >= 0; c--){
+            int colNull = 0;
+            int rowNull = 0;
+            boolean isNull = false;
+
+            int colNum = 3;
+            int rowNum = 3;
+            boolean isNum = false;
+
+            for(int r = 3; r >= 0; r--){
+                Tile t = board.tile(c, r);
+                if(t != null && isNum){
+                    doesScore = board.move(colNum, rowNum, t);
+                    if(doesScore){
+                        score += board.tile(colNum, rowNum).value();
+                    }
+                    isNum = false;
+                    changed = true;
+                    if(!isNull && rowNull < rowNum){
+                        isNull = true;
+                        colNull = c;
+                        rowNull = r;
+                    }
+
+                    continue;
+                }
+
+                if(isNull && t != null){
+                    doesScore = board.move(colNull, rowNull, t);
+                    if(doesScore){
+                        score += board.tile(colNull, rowNull).value();
+                    }
+                    changed = true;
+                    continue;
+                }
+
+                if(t != null){
+                    colNum = c;
+                    rowNum = r;
+                    isNum = true;
+                }
+
+                if(t == null && r == 3){
+                    isNull = true;
+                    colNull = c;
+                    rowNull = r;
+                } else if(t == null && isNull == false && r != 0) {
+                    isNull = true;
+                    colNull = c;
+                    rowNull = r;
+                }
+            }
+        }
+
+
+        /*
         for(int c = 3; c >= 0; c--){
             for(int r = 3; r >= 0; r--){
                 Tile t = board.tile(c, r);
@@ -189,18 +247,16 @@ public class Model extends Observable {
                     board.move(c, r+1, t);
                     score += board.tile(c, r+1).value();
                     changed = true;
-                }/* else if (r < 2  && t != null && board.tile(c,r+1) != null && board.tile(c, r+2) == null && board.tile(c, r+1).value() == t.value()){
+                }else if (r < 2  && t != null && board.tile(c,r+1) != null && board.tile(c, r+2) == null && board.tile(c, r+1).value() == t.value()){
                     board.move(c, r+2, t);
                     score += board.tile(c, r+1).value();
                     changed = true;
-                }*/ else if(r < 2  && t != null && board.tile(c,r+1) == null){
+                } else if(r < 2  && t != null && board.tile(c,r+1) == null){
                     board.move(c, r+1, t);
                     changed = true;
                 }
-
-                // else if di atas = board move r+1, r+2 == null dihapus
             }
-        }
+        }*/
         return changed;
     }
 
