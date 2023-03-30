@@ -174,7 +174,7 @@ public class Model extends Observable {
         boolean changed = false;
 
         boolean doesScore = false;
-
+        //Line 190 & 206 bermasalah (board.move)
         for(int c = 3; c >= 0; c--){
             int colNull = 0;
             int rowNull = 0;
@@ -186,7 +186,7 @@ public class Model extends Observable {
 
             for(int r = 3; r >= 0; r--){
                 Tile t = board.tile(c, r);
-                if(t != null && isNum){
+                if(t != null && isNum && board.tile(colNum, rowNum).value() == t.value()){ //
                     doesScore = board.move(colNum, rowNum, t);
                     if(doesScore){
                         score += board.tile(colNum, rowNum).value();
@@ -208,6 +208,12 @@ public class Model extends Observable {
                         score += board.tile(colNull, rowNull).value();
                     }
                     changed = true;
+                    colNum = colNull;
+                    rowNum = rowNull;
+                    colNull = c; //mengassign kalo kolom ini null
+                    rowNull = r;
+
+                    isNum = true;
                     continue;
                 }
 
@@ -221,7 +227,7 @@ public class Model extends Observable {
                     isNull = true;
                     colNull = c;
                     rowNull = r;
-                } else if(t == null && isNull == false && r != 0) {
+                } else if(t == null && isNull == false ) { //&& r != 0
                     isNull = true;
                     colNull = c;
                     rowNull = r;
