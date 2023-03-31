@@ -115,32 +115,6 @@ public class Model extends Observable {
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
 
-        /*for(int c = 3; c >= 0; c--){
-            for(int r = 3; r >= 0; r--){
-                Tile t = board.tile(c, r);
-                if(r < 3  && board.tile(c,r) != null && board.tile(c,r+1) == null ){
-                    board.move(c, (r+1)%board.size(), t);
-                    changed = true;
-                }
-            }
-        }
-
-        for(int c = 3; c >= 0; c--){
-            for(int r = 3; r >= 0; r--){
-                Tile t = board.tile(c, r);
-                if(r < 3  && t != null && board.tile(c,r+1) != null && board.tile(c, r+1).value() == t.value()){
-                    board.move(c, r+1, t);
-                    changed = true;
-                    score += board.tile(c, r+1).value();
-                } else if(r < 2  && board.tile(c,r) != null && board.tile(c,r+1) == null ){
-                    board.move(c, r+1, t);
-                    changed = true;
-                }
-            }
-        }*/
-        /** DEBUG changed = true => kalo ga berubah ga perlu changed = true
-         coba cek TestModel
-         * */
         if (side == Side.NORTH){
             changed = tiltNorth();;
         } else if (side == Side.WEST){
@@ -174,7 +148,13 @@ public class Model extends Observable {
         boolean changed = false;
 
         boolean doesScore = false;
-        //Line 190 & 206 bermasalah (board.move)
+
+        /** imagine we iterating from top of the row to the bottom.
+        when the column is null, you mark that tile so when there is a tile that isn't null
+        you move that tile to the null tile. Then, if you find not null again, check if the value is the same,
+        if the value is not the same, then move the tile to the latest found null tile. If the value is the same,
+        then merge them.
+         */
         for(int c = 3; c >= 0; c--){
             int colNull = 0;
             int rowNull = 0;
@@ -235,34 +215,6 @@ public class Model extends Observable {
             }
         }
 
-
-        /*
-        for(int c = 3; c >= 0; c--){
-            for(int r = 3; r >= 0; r--){
-                Tile t = board.tile(c, r);
-                if(r < 3  && board.tile(c,r) != null && board.tile(c,r+1) == null ){
-                    board.move(c, r+1, t);
-                    changed = true;
-                }
-            }
-        }
-        for(int c = 3; c >= 0; c--){
-            for(int r = 3; r >= 0; r--){
-                Tile t = board.tile(c, r);
-                if(r < 3  && t != null && board.tile(c,r+1) != null && board.tile(c, r+1).value() == t.value()){
-                    board.move(c, r+1, t);
-                    score += board.tile(c, r+1).value();
-                    changed = true;
-                }else if (r < 2  && t != null && board.tile(c,r+1) != null && board.tile(c, r+2) == null && board.tile(c, r+1).value() == t.value()){
-                    board.move(c, r+2, t);
-                    score += board.tile(c, r+1).value();
-                    changed = true;
-                } else if(r < 2  && t != null && board.tile(c,r+1) == null){
-                    board.move(c, r+1, t);
-                    changed = true;
-                }
-            }
-        }*/
         return changed;
     }
 
